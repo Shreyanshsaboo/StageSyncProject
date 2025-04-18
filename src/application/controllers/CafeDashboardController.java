@@ -25,131 +25,115 @@ import java.io.IOException;
 public class CafeDashboardController {
 
     @FXML private Label nameLabel, emailLabel, locationLabel;
-    @FXML private Label phoneLabel, websiteLabel, cityLabel, postalCodeLabel;
+    @FXML private Label phoneLabel, cityLabel, postalCodeLabel;
     @FXML private Label capacityLabel, musicTypesLabel, hoursLabel, descriptionLabel;
-    @FXML private TextField titleField, dateField, payField, requirementsField;
+    @FXML private TextField titleField;
     @FXML private TextArea descField;
+    @FXML private TextField dateField;
+    @FXML private TextField timeField;
+    @FXML private TextField locationField;
+    @FXML private TextField addressField;
+    @FXML private TextField payField;
     @FXML private Label gigStatusLabel;
     @FXML private ListView<HBox> applicationsList;
+    @FXML private ListView<HBox> gigsList;
 
-    private int cafeId; // Replace with logged-in cafe ID
+    private int cafeId;
+    private boolean gigsLoaded = false; // Track if gigs have been loaded
 
     @FXML
-    public void initialize() {
+    public void initialize() throws Exception {
+        loadProfile();
+        // Don't load gigs here - will load on first tab visit
+    }
+
+    public void setCafeId(int cafeId) {
+        this.cafeId = cafeId;
         try {
             loadProfile();
-            loadApplications(); // Load all applications instead of using dropdown
+            loadApplications();
+            // Don't load gigs here - will load on first tab visit
         } catch (Exception e) {
             e.printStackTrace();
             gigStatusLabel.setText("Error initializing profile: " + e.getMessage());
         }
     }
 
-    private void loadProfile() throws Exception {
-        try (Connection conn = getDatabaseConnection()) {
-            String sql = "SELECT cafe_id, name, email, phone_number, location FROM cafes WHERE cafe_id = ?";
+    private void loadProfile() {
+        try (Connection conn = DBUtil.getConnection()) {
+            String sql = "SELECT name, email, phone_number, location, capacity FROM cafes WHERE cafe_id = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setInt(1, cafeId);
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                // Basic Info
                 nameLabel.setText(rs.getString("name"));
                 emailLabel.setText(rs.getString("email"));
                 phoneLabel.setText(rs.getString("phone_number"));
                 locationLabel.setText(rs.getString("location"));
-
-                // Set default values for non-existent fields
-                websiteLabel.setText("Not Available");
-                cityLabel.setText("Not Available");
-                postalCodeLabel.setText("Not Available");
-                capacityLabel.setText("Not Available");
-                musicTypesLabel.setText("Not Available");
-                hoursLabel.setText("Not Available");
-                descriptionLabel.setText("Not Available");
+                cityLabel.setText(rs.getString("location")); // Using location as city since they're the same in your schema
+                capacityLabel.setText(String.valueOf(rs.getInt("capacity")));
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             gigStatusLabel.setText("Error loading profile: " + e.getMessage());
-            throw e;
+        }
+    }
+
+    @FXML
+    private void handleTabChange() {
+        if (!gigsLoaded) {
+            loadGigs();
+            gigsLoaded = true;
         }
     }
 
     @FXML
     public void postGig() {
-        String title = titleField.getText();
-        String desc = descField.getText();
-        String date = dateField.getText();
-        String pay = payField.getText();
-        String requirements = requirementsField.getText();
-
-        if (title.isEmpty() || date.isEmpty()) {
-            gigStatusLabel.setText("Title and Date are required.");
-            return;
-        }
-
-        if (!isValidDateFormat(date)) {
-            gigStatusLabel.setText("Invalid date format. Use YYYY-MM-DD HH:MM.");
-            return;
-        }
-
-        if (pay.isEmpty()) pay = "Negotiable";
-        if (requirements.isEmpty()) requirements = "None";
-
-        try (Connection conn = getDatabaseConnection()) {
-            if (isGigOverlap(conn, date)) {
-                gigStatusLabel.setText("The gig overlaps with an existing one.");
-                return;
-            }
-
-            String sql = "INSERT INTO gigs (cafe_id, title, description, date, time, location, pay, requirements) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        try (Connection conn = DBUtil.getConnection()) {
+            String sql = "INSERT INTO gigs (cafe_id, title, description, date, time, location, address, pay) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, cafeId);
-            stmt.setString(2, title);
-            stmt.setString(3, desc);
-            stmt.setString(4, date.split(" ")[0]);
-            stmt.setString(5, date.split(" ")[1]);
-            stmt.setString(6, "Default Location");
-            stmt.setString(7, pay);
-            stmt.setString(8, requirements);
 
-            int rows = stmt.executeUpdate();
-            if (rows > 0) {
-                gigStatusLabel.setText("Gig posted successfully.");
-            } else {
-                gigStatusLabel.setText("Failed to post gig.");
-            }
+            stmt.setInt(1, cafeId);
+            stmt.setString(2, titleField.getText());
+            stmt.setString(3, descField.getText());
+            stmt.setString(4, dateField.getText());
+            stmt.setString(5, timeField.getText());
+            stmt.setString(6, locationField.getText());
+            stmt.setString(7, addressField.getText());
+            stmt.setString(8, payField.getText());
+
+            stmt.executeUpdate();
+
+            // Clear fields after successful post
+            titleField.clear();
+            descField.clear();
+            dateField.clear();
+            timeField.clear();
+            locationField.clear();
+            addressField.clear();
+            payField.clear();
+
+            gigStatusLabel.setText("Gig posted successfully!");
+
+            // Reset gigsLoaded flag to force refresh on next tab visit
+            gigsLoaded = false;
         } catch (Exception e) {
             e.printStackTrace();
-            gigStatusLabel.setText("Error: " + e.getMessage());
+            gigStatusLabel.setText("Error posting gig: " + e.getMessage());
         }
-    }
-
-    private boolean isGigOverlap(Connection conn, String date) throws SQLException {
-        String[] dateTime = date.split(" ");
-        String datePart = dateTime[0];
-        String timePart = dateTime[1];
-
-        String sql = "SELECT * FROM gigs WHERE cafe_id = ? AND date = ? AND time = ?";
-        PreparedStatement stmt = conn.prepareStatement(sql);
-        stmt.setInt(1, cafeId);
-        stmt.setString(2, datePart);
-        stmt.setString(3, timePart);
-
-        ResultSet rs = stmt.executeQuery();
-        return rs.next();
     }
 
     private void loadApplications() throws Exception {
         applicationsList.getItems().clear();
 
         try (Connection conn = getDatabaseConnection()) {
+            // Modified query to only get accepted applications
             String sql = "SELECT m.first_name, m.last_name, m.genre, m.instruments, a.status, a.application_id, g.cafe_id " +
                     "FROM applications a " +
                     "JOIN musicians m ON a.musician_id = m.musician_id " +
                     "JOIN gigs g ON a.gig_id = g.gig_id " +
-                    "WHERE g.cafe_id = ?";
+                    "WHERE g.cafe_id = ? AND (a.status = 'Accepted' OR a.status = 'Pending')";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setInt(1, cafeId);
             ResultSet rs = stmt.executeQuery();
@@ -167,16 +151,23 @@ public class CafeDashboardController {
                 Button acceptBtn = new Button("Accept");
                 Button rejectBtn = new Button("Reject");
 
+                // Create the HBox first
+                HBox hbox = new HBox(10, info, acceptBtn, rejectBtn);
+                hbox.setStyle("-fx-padding: 5; -fx-alignment: center-left;");
+
+                // Only enable buttons for pending applications
                 if (!status.equalsIgnoreCase("Pending")) {
                     acceptBtn.setDisable(true);
                     rejectBtn.setDisable(true);
                 }
 
                 acceptBtn.setOnAction(e -> updateApplicationStatus(applicationId, "Accepted"));
-                rejectBtn.setOnAction(e -> updateApplicationStatus(applicationId, "Rejected"));
+                rejectBtn.setOnAction(e -> {
+                    updateApplicationStatus(applicationId, "Rejected");
+                    // Remove the application from the list when rejected
+                    applicationsList.getItems().remove(hbox);
+                });
 
-                HBox hbox = new HBox(10, info, acceptBtn, rejectBtn);
-                hbox.setStyle("-fx-padding: 5; -fx-alignment: center-left;");
                 apps.add(hbox);
             }
 
@@ -243,10 +234,6 @@ public class CafeDashboardController {
         return conn;
     }
 
-    public void setCafeId(int cafeId) {
-        this.cafeId = cafeId;
-    }
-
     @FXML
     private void editProfile() {
         try {
@@ -296,5 +283,47 @@ public class CafeDashboardController {
             e.printStackTrace();
             gigStatusLabel.setText("Error logging out");
         }
+    }
+
+    private void loadGigs() {
+        try (Connection conn = DBUtil.getConnection()) {
+            String sql = "SELECT * FROM gigs WHERE cafe_id = ? ORDER BY date DESC, time DESC";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, cafeId);
+            ResultSet rs = stmt.executeQuery();
+
+            // Clear existing items
+            gigsList.getItems().clear();
+
+            while (rs.next()) {
+                String title = rs.getString("title");
+                String date = rs.getString("date");
+                String time = rs.getString("time");
+                String pay = rs.getString("pay");
+                String location = rs.getString("location");
+                String address = rs.getString("address");
+
+                // Create a formatted string for each gig
+                String gigInfo = String.format("%s - %s %s - $%s\nLocation: %s\nAddress: %s",
+                        title, date, time, pay, location, address != null ? address : "No address provided");
+
+                HBox gigBox = new HBox(10);
+                Label gigLabel = new Label(gigInfo);
+                gigLabel.setWrapText(true);
+                gigLabel.setStyle("-fx-font-size: 14px; -fx-padding: 10;");
+
+                gigBox.getChildren().add(gigLabel);
+                gigBox.setStyle("-fx-background-color: white; -fx-padding: 10; -fx-background-radius: 5;");
+
+                gigsList.getItems().add(gigBox);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            gigStatusLabel.setText("Error loading gigs: " + e.getMessage());
+        }
+    }
+
+    private void switchToLoginScene() throws IOException {
+        // ... existing code ...
     }
 }

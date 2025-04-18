@@ -3,42 +3,66 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Text?>
 
-<VBox spacing="10" alignment="CENTER" prefWidth="400" xmlns:fx="http://javafx.com/fxml" fx:controller="application.controllers.EditCafeDialogController">
-    <padding>
-        <Insets top="20" right="20" bottom="20" left="20"/>
-    </padding>
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="application.controllers.EditCafeDialogController"
+      spacing="20" style="-fx-background-color: #f8f9fa; -fx-padding: 30;">
 
-    <Label text="Edit Cafe Profile" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+    <Text text="Edit Cafe Profile" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-fill: #212529;"/>
 
-    <GridPane vgap="10" hgap="10">
-        <!-- Contact Information -->
-        <Label text="Contact Information" style="-fx-font-weight: bold" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2"/>
+    <!-- Contact Information Section -->
+    <VBox spacing="15" style="-fx-background-color: #ffffff; -fx-padding: 20; -fx-background-radius: 10;">
+        <Text text="Contact Information" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-fill: #212529;"/>
 
-        <Label text="Name:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-        <TextField fx:id="nameField" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        <GridPane hgap="15" vgap="15">
+            <columnConstraints>
+                <ColumnConstraints minWidth="100" prefWidth="120"/>
+                <ColumnConstraints hgrow="ALWAYS"/>
+            </columnConstraints>
 
-        <Label text="Email:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-        <TextField fx:id="emailField" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+            <Label text="Name:" style="-fx-font-size: 14px;" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+            <TextField fx:id="nameField" GridPane.rowIndex="0" GridPane.columnIndex="1"
+                       style="-fx-pref-height: 35; -fx-font-size: 14px;"/>
 
-        <Label text="Phone:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-        <TextField fx:id="phoneField" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+            <Label text="Email:" style="-fx-font-size: 14px;" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+            <TextField fx:id="emailField" GridPane.rowIndex="1" GridPane.columnIndex="1"
+                       style="-fx-pref-height: 35; -fx-font-size: 14px;"/>
 
-        <!-- Venue Information -->
-        <Label text="Venue Information" style="-fx-font-weight: bold" GridPane.columnIndex="0" GridPane.rowIndex="4" GridPane.columnSpan="2"/>
+            <Label text="Phone:" style="-fx-font-size: 14px;" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+            <TextField fx:id="phoneField" GridPane.rowIndex="2" GridPane.columnIndex="1"
+                       style="-fx-pref-height: 35; -fx-font-size: 14px;"/>
+        </GridPane>
+    </VBox>
 
-        <Label text="Location:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-        <TextField fx:id="locationField" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+    <!-- Venue Information Section -->
+    <VBox spacing="15" style="-fx-background-color: #ffffff; -fx-padding: 20; -fx-background-radius: 10;">
+        <Text text="Venue Information" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-fill: #212529;"/>
 
-        <Label text="Venue Type:" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-        <TextField fx:id="venueTypeField" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+        <GridPane hgap="15" vgap="15">
+            <columnConstraints>
+                <ColumnConstraints minWidth="100" prefWidth="120"/>
+                <ColumnConstraints hgrow="ALWAYS"/>
+            </columnConstraints>
 
-        <Label text="Capacity:" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
-        <TextField fx:id="capacityField" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
-    </GridPane>
+            <Label text="Address:" style="-fx-font-size: 14px;" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+            <TextField fx:id="locationField" GridPane.rowIndex="0" GridPane.columnIndex="1"
+                       style="-fx-pref-height: 35; -fx-font-size: 14px;"/>
 
-    <HBox spacing="10" alignment="CENTER">
-        <Button text="Save" onAction="#handleSave"/>
-        <Button text="Cancel" onAction="#handleCancel"/>
+            <Label text="City:" style="-fx-font-size: 14px;" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+            <TextField fx:id="cityField" GridPane.rowIndex="1" GridPane.columnIndex="1"
+                       style="-fx-pref-height: 35; -fx-font-size: 14px;"/>
+
+            <Label text="Capacity:" style="-fx-font-size: 14px;" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+            <TextField fx:id="capacityField" GridPane.rowIndex="2" GridPane.columnIndex="1"
+                       style="-fx-pref-height: 35; -fx-font-size: 14px;"/>
+        </GridPane>
+    </VBox>
+
+    <!-- Action Buttons -->
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button text="Save" onAction="#handleSave"
+                style="-fx-background-color: #0d6efd; -fx-text-fill: white; -fx-min-width: 100; -fx-min-height: 35;"/>
+        <Button text="Cancel" onAction="#handleCancel"
+                style="-fx-background-color: #6c757d; -fx-text-fill: white; -fx-min-width: 100; -fx-min-height: 35;"/>
     </HBox>
 </VBox>

@@ -23,7 +23,7 @@ public class MusicianDashboardController {
     @FXML private Label nameLabel, phoneLabel, emailLabel;
     @FXML private Label genreLabel, instrumentsLabel, experienceLabel;
     @FXML private TableView<Gig> gigTable;
-    @FXML private TableColumn<Gig, String> titleCol, dateCol, payCol;
+    @FXML private TableColumn<Gig, String> titleCol, dateCol, payCol, locationCol;
     @FXML private Label applyStatus;
     @FXML private ListView<String> applicationList;
 
@@ -106,18 +106,20 @@ public class MusicianDashboardController {
         titleCol = new TableColumn<>("Title");
         dateCol = new TableColumn<>("Date & Time");
         payCol = new TableColumn<>("Pay");
+        locationCol = new TableColumn<>("Location");
 
         titleCol.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getTitle()));
         dateCol.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getDate()));
         payCol.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getPay()));
+        locationCol.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getAddress()));
 
-        gigTable.getColumns().addAll(titleCol, dateCol, payCol);
+        gigTable.getColumns().addAll(titleCol, dateCol, payCol, locationCol);
         loadGigs();
     }
 
     private void loadGigs() {
         try (Connection conn = DBUtil.getConnection()) {
-            String sql = "SELECT gig_id, title, CONCAT(date, ' ', time) AS date_time, pay, description, cafe_id FROM gigs";
+            String sql = "SELECT gig_id, title, CONCAT(date, ' ', time) AS date_time, pay, description, address, cafe_id FROM gigs";
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
 
@@ -129,7 +131,7 @@ public class MusicianDashboardController {
                         rs.getString("date_time"),
                         rs.getString("pay"),
                         rs.getString("description"),
-                        "", // Empty string for requirements since we're not using it
+                        rs.getString("address"),
                         rs.getInt("cafe_id")
                 );
                 gigs.add(gig);

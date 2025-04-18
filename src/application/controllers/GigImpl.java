@@ -6,6 +6,7 @@ public class GigImpl implements Gig {
     private String pay;
     private String description;
     private String requirements;
+    private String address;
     private int gigId;
     private int cafeId;
 
@@ -15,13 +16,13 @@ public class GigImpl implements Gig {
         this.pay = pay;
     }
 
-    public GigImpl(int gigId, String title, String date, String pay, String description, String requirements, int cafeId) {
+    public GigImpl(int gigId, String title, String date, String pay, String description, String address, int cafeId) {
         this.gigId = gigId;
         this.title = title;
         this.date = date;
         this.pay = pay;
         this.description = description;
-        this.requirements = requirements;
+        this.address = address;
         this.cafeId = cafeId;
     }
 
@@ -48,6 +49,11 @@ public class GigImpl implements Gig {
     @Override
     public String getRequirements() {
         return requirements;
+    }
+
+    @Override
+    public String getAddress() {
+        return address;
     }
 
     @Override
@@ -86,6 +92,11 @@ public class GigImpl implements Gig {
     }
 
     @Override
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    @Override
     public void setGigId(int gigId) {
         this.gigId = gigId;
     }
@@ -97,6 +108,6 @@ public class GigImpl implements Gig {
 
     @Override
     public String toString() {
-        return String.format("%s - %s - %s", title, date, pay);
+        return String.format("%s - %s - %s - %s", title, date, pay, address);
     }
 }
