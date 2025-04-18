@@ -1,0 +1,149 @@
+/* Modern Theme CSS */
+
+.root {
+    -fx-background-color: #f8f9fa;
+    -fx-font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+/* Content Box Styling */
+.content-box {
+    -fx-background-color: white;
+    -fx-padding: 20px;
+    -fx-spacing: 15px;
+}
+
+/* Profile Styling */
+.profile-section {
+    -fx-background-color: white;
+    -fx-padding: 20px;
+    -fx-spacing: 15px;
+    -fx-background-radius: 8px;
+    -fx-border-color: #e9ecef;
+    -fx-border-radius: 8px;
+}
+
+.section-header {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #212529;
+    -fx-padding: 0 0 10px 0;
+}
+
+.field-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #6c757d;
+    -fx-font-weight: bold;
+}
+
+.field-value {
+    -fx-font-size: 14px;
+    -fx-text-fill: #212529;
+}
+
+/* ScrollPane styling */
+.edge-to-edge {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.edge-to-edge > .viewport {
+    -fx-background-color: transparent;
+}
+
+/* Modern Table Styling */
+.modern-table {
+    -fx-background-color: transparent;
+    -fx-table-cell-border-color: transparent;
+    -fx-padding: 5px;
+}
+
+.modern-table .column-header {
+    -fx-background-color: #f8f9fa;
+    -fx-padding: 15px 10px;
+    -fx-font-weight: bold;
+    -fx-border-color: transparent transparent #dee2e6 transparent;
+}
+
+.modern-table .table-row-cell {
+    -fx-background-color: white;
+    -fx-border-color: transparent transparent #f1f3f5 transparent;
+    -fx-padding: 10px 5px;
+}
+
+.modern-table .table-row-cell:hover {
+    -fx-background-color: #f8f9fa;
+}
+
+.modern-table .table-row-cell:selected {
+    -fx-background-color: #e9ecef;
+}
+
+/* Modern List Styling */
+.modern-list {
+    -fx-background-color: transparent;
+    -fx-padding: 5px;
+}
+
+.modern-list .list-cell {
+    -fx-background-color: white;
+    -fx-padding: 15px;
+    -fx-border-color: transparent transparent #f1f3f5 transparent;
+}
+
+.modern-list .list-cell:hover {
+    -fx-background-color: #f8f9fa;
+}
+
+.modern-list .list-cell:selected {
+    -fx-background-color: #e9ecef;
+}
+
+/* Button Styling */
+.modern-button {
+    -fx-background-color: #007bff;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 10px 20px;
+    -fx-background-radius: 5px;
+    -fx-cursor: hand;
+}
+
+.modern-button:hover {
+    -fx-background-color: #0056b3;
+}
+
+/* Label Styling */
+.header-label {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #212529;
+}
+
+.info-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #495057;
+}
+
+.status-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #28a745;
+}
+
+/* Tab Styling */
+.tab-pane {
+    -fx-tab-min-height: 40px;
+}
+
+.tab {
+    -fx-background-color: transparent;
+    -fx-padding: 10px 15px;
+}
+
+.tab:selected {
+    -fx-background-color: white;
+    -fx-focus-color: transparent;
+}
+
+.tab-header-background {
+    -fx-background-color: #f8f9fa;
+}

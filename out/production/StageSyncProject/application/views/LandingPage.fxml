@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="application.controllers.LandingPageController"
+      alignment="CENTER" spacing="15" style="-fx-padding: 30;">
+
+    <Label text="Welcome to StageSync" style="-fx-font-size: 24;" />
+
+    <Button text="Sign up as Musician" onAction="#goToMusicianSignup"/>
+    <Button text="Sign up as Café Owner" onAction="#goToCafeSignup"/>
+
+    <Label text="Already have an account?" />
+
+    <Button text="Login as Musician" onAction="#goToMusicianLogin"/>
+    <Button text="Login as Café Owner" onAction="#goToCafeLogin"/>
+</VBox>

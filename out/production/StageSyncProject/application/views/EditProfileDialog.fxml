@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="10" alignment="CENTER" prefWidth="400" xmlns:fx="http://javafx.com/fxml" fx:controller="application.controllers.EditProfileDialogController">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <Label text="Edit Profile" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+
+    <GridPane vgap="10" hgap="10">
+        <Label text="Email:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+        <TextField fx:id="emailField" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+        <Label text="Phone:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+        <TextField fx:id="phoneField" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+        <Label text="Genre:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+        <TextField fx:id="genreField" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+
+        <Label text="Instruments:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+        <TextField fx:id="instrumentsField" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+
+        <Label text="Experience:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+        <TextField fx:id="experienceField" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+    </GridPane>
+
+    <HBox spacing="10" alignment="CENTER">
+        <Button text="Save" onAction="#handleSave"/>
+        <Button text="Cancel" onAction="#handleCancel"/>
+    </HBox>
+</VBox>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="10" alignment="CENTER" prefWidth="400" xmlns:fx="http://javafx.com/fxml" fx:controller="application.controllers.EditCafeDialogController">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <Label text="Edit Cafe Profile" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+
+    <GridPane vgap="10" hgap="10">
+        <!-- Contact Information -->
+        <Label text="Contact Information" style="-fx-font-weight: bold" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2"/>
+
+        <Label text="Name:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+        <TextField fx:id="nameField" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+        <Label text="Email:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+        <TextField fx:id="emailField" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+
+        <Label text="Phone:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+        <TextField fx:id="phoneField" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+
+        <!-- Venue Information -->
+        <Label text="Venue Information" style="-fx-font-weight: bold" GridPane.columnIndex="0" GridPane.rowIndex="4" GridPane.columnSpan="2"/>
+
+        <Label text="Location:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+        <TextField fx:id="locationField" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+
+        <Label text="Venue Type:" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+        <TextField fx:id="venueTypeField" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+
+        <Label text="Capacity:" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
+        <TextField fx:id="capacityField" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+    </GridPane>
+
+    <HBox spacing="10" alignment="CENTER">
+        <Button text="Save" onAction="#handleSave"/>
+        <Button text="Cancel" onAction="#handleCancel"/>
+    </HBox>
+</VBox>

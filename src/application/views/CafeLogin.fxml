@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="application.controllers.CafeLoginController"
+      alignment="CENTER" spacing="15">
+    <padding>
+        <Insets top="30" right="30" bottom="30" left="30"/>
+    </padding>
+
+    <Label text="Café Owner Login" style="-fx-font-size: 24; -fx-font-weight: bold;" />
+
+    <TextField fx:id="emailField" promptText="Email"
+               style="-fx-pref-width: 250; -fx-padding: 8; -fx-font-size: 14;"/>
+    <PasswordField fx:id="passwordField" promptText="Password"
+                   style="-fx-pref-width: 250; -fx-padding: 8; -fx-font-size: 14;"/>
+
+    <VBox spacing="10" alignment="CENTER">
+        <Button text="Login" onAction="#handleLogin"
+                style="-fx-background-color: #0d6efd; -fx-text-fill: white; -fx-min-width: 200; -fx-padding: 10; -fx-font-size: 14;"/>
+        <Button text="Back" onAction="#handleBack"
+                style="-fx-background-color: #6c757d; -fx-text-fill: white; -fx-min-width: 200; -fx-padding: 10; -fx-font-size: 14;"/>
+    </VBox>
+
+    <Label fx:id="statusLabel" style="-fx-text-fill: red;" />
+</VBox>

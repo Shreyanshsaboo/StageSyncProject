@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.text.Font?>
+
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="application.controllers.MusicianDashboardController" stylesheets="@../styles/modern.css">
+    <HBox alignment="CENTER_RIGHT" style="-fx-background-color: #f8f9fa; -fx-padding: 10 20;">
+        <Button text="Logout" onAction="#handleLogout" styleClass="danger-button"/>
+    </HBox>
+
+    <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+        <tabs>
+            <Tab text="Profile">
+                <ScrollPane fitToWidth="true" styleClass="edge-to-edge">
+                    <VBox spacing="20" styleClass="content-box">
+                        <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+
+                        <!-- Profile Header -->
+                        <VBox styleClass="profile-section">
+                            <Label fx:id="nameLabel" styleClass="header-label"/>
+                        </VBox>
+
+                        <!-- Contact Information -->
+                        <VBox styleClass="profile-section">
+                            <Label text="Contact Information" styleClass="section-header"/>
+                            <GridPane vgap="10" hgap="15">
+                                <Label text="Phone:" styleClass="field-label" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                                <Label fx:id="phoneLabel" styleClass="field-value" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                                <Label text="Email:" styleClass="field-label" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                                <Label fx:id="emailLabel" styleClass="field-value" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                            </GridPane>
+                        </VBox>
+
+                        <!-- Musical Background -->
+                        <VBox styleClass="profile-section">
+                            <Label text="Musical Background" styleClass="section-header"/>
+                            <GridPane vgap="10" hgap="15">
+                                <Label text="Genre:" styleClass="field-label" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                                <Label fx:id="genreLabel" styleClass="field-value" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                                <Label text="Instruments:" styleClass="field-label" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                                <Label fx:id="instrumentsLabel" styleClass="field-value" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                                <Label text="Experience:" styleClass="field-label" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                                <Label fx:id="experienceLabel" styleClass="field-value" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                            </GridPane>
+                        </VBox>
+
+                        <Button text="Edit Profile" onAction="#editProfile" styleClass="modern-button"/>
+                    </VBox>
+                </ScrollPane>
+            </Tab>
+
+            <Tab text="Book a Gig">
+                <VBox spacing="20" styleClass="content-box">
+                    <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+
+                    <TableView fx:id="gigTable" VBox.vgrow="ALWAYS" styleClass="modern-table">
+                        <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/></columnResizePolicy>
+                    </TableView>
+
+                    <HBox spacing="10" alignment="CENTER">
+                        <Button text="Apply for Selected Gig" onAction="#applyForGig" styleClass="modern-button"/>
+                        <Label fx:id="applyStatus" styleClass="status-label"/>
+                    </HBox>
+                </VBox>
+            </Tab>
+
+            <Tab text="My Applications">
+                <VBox spacing="20" styleClass="content-box">
+                    <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+
+                    <ListView fx:id="applicationList" VBox.vgrow="ALWAYS" styleClass="modern-list"/>
+                </VBox>
+            </Tab>
+        </tabs>
+    </TabPane>
+</VBox>
