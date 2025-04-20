@@ -13,8 +13,11 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.animation.FadeTransition;
+import javafx.util.Duration;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -48,13 +51,44 @@ public class CafeDashboardController {
     }
 
     public void setCafeId(int cafeId) {
+        System.out.println("\n=== Cafe Dashboard Initialization ===");
+        System.out.println("Setting cafe ID to: " + cafeId);
         this.cafeId = cafeId;
         try {
+            // First verify the cafe exists and get its name
+            Connection conn = DBUtil.getConnection();
+            String cafeSql = "SELECT name FROM cafes WHERE cafe_id = ?";
+            PreparedStatement cafeStmt = conn.prepareStatement(cafeSql);
+            cafeStmt.setInt(1, cafeId);
+            ResultSet cafeRs = cafeStmt.executeQuery();
+
+            if (cafeRs.next()) {
+                System.out.println("Successfully connected as cafe: " + cafeRs.getString("name"));
+            }
+
+            // Check what gigs this cafe has
+            String gigsSql = "SELECT gig_id, title FROM gigs WHERE cafe_id = ?";
+            PreparedStatement gigsStmt = conn.prepareStatement(gigsSql);
+            gigsStmt.setInt(1, cafeId);
+            ResultSet gigsRs = gigsStmt.executeQuery();
+
+            System.out.println("\nGigs owned by this cafe:");
+            boolean hasGigs = false;
+            while (gigsRs.next()) {
+                hasGigs = true;
+                System.out.println("- Gig ID: " + gigsRs.getInt("gig_id") + ", Title: " + gigsRs.getString("title"));
+            }
+            if (!hasGigs) {
+                System.out.println("No gigs found for this cafe");
+            }
+
             loadProfile();
             loadApplications();
-            // Don't load gigs here - will load on first tab visit
+            System.out.println("\nInitialization complete!");
+            System.out.println("================================\n");
         } catch (Exception e) {
             e.printStackTrace();
+            System.err.println("Error in setCafeId: " + e.getMessage());
             gigStatusLabel.setText("Error initializing profile: " + e.getMessage());
         }
     }
@@ -126,93 +160,210 @@ public class CafeDashboardController {
 
     private void loadApplications() throws Exception {
         applicationsList.getItems().clear();
+        System.out.println("\n=== Loading Applications ===");
+        System.out.println("Current Cafe ID: " + cafeId);
 
         try (Connection conn = getDatabaseConnection()) {
-            // Modified query to only get accepted applications
-            String sql = "SELECT m.first_name, m.last_name, m.genre, m.instruments, a.status, a.application_id, g.cafe_id " +
+            // First, check what gigs this cafe owns
+            String gigCheckSql = "SELECT gig_id, title FROM gigs WHERE cafe_id = ?";
+            PreparedStatement gigCheckStmt = conn.prepareStatement(gigCheckSql);
+            gigCheckStmt.setInt(1, cafeId);
+            ResultSet gigRs = gigCheckStmt.executeQuery();
+
+            System.out.println("\nGigs owned by cafe " + cafeId + ":");
+            boolean hasGigs = false;
+            while (gigRs.next()) {
+                hasGigs = true;
+                System.out.println("- Gig ID: " + gigRs.getInt("gig_id") + ", Title: " + gigRs.getString("title"));
+            }
+            if (!hasGigs) {
+                System.out.println("No gigs found for this cafe!");
+            }
+
+            // Remove the status filter from SQL query to show all applications
+            String sql = "SELECT m.first_name, m.last_name, m.genre, m.instruments, " +
+                    "a.status, a.application_id, g.gig_id, g.title as gig_title " +
                     "FROM applications a " +
                     "JOIN musicians m ON a.musician_id = m.musician_id " +
                     "JOIN gigs g ON a.gig_id = g.gig_id " +
-                    "WHERE g.cafe_id = ? AND (a.status = 'Accepted' OR a.status = 'Pending')";
+                    "WHERE g.cafe_id = ? " +
+                    "ORDER BY a.application_date DESC";
+
+            System.out.println("\nExecuting query to find all applications:");
+            System.out.println(sql);
+
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setInt(1, cafeId);
             ResultSet rs = stmt.executeQuery();
 
             ObservableList<HBox> apps = FXCollections.observableArrayList();
+            int applicationCount = 0;
+
+            System.out.println("\nApplications found:");
             while (rs.next()) {
+                applicationCount++;
                 int applicationId = rs.getInt("application_id");
                 String status = rs.getString("status");
+                String firstName = rs.getString("first_name");
+                String lastName = rs.getString("last_name");
+                String gigTitle = rs.getString("gig_title");
 
-                Label info = new Label("Name: " + rs.getString("first_name") + " " + rs.getString("last_name") +
-                        ", Genre: " + rs.getString("genre") +
-                        ", Instruments: " + rs.getString("instruments") +
-                        ", Status: " + status);
+                System.out.println(String.format("- App ID: %d, Name: %s %s, Status: %s, Gig: %s",
+                        applicationId, firstName, lastName, status, gigTitle));
+
+                Label info = new Label(String.format("Gig: %s\nName: %s %s\nGenre: %s\nInstruments: %s",
+                        gigTitle, firstName, lastName, rs.getString("genre"), rs.getString("instruments")));
+                info.setWrapText(true);
+                info.setStyle("-fx-font-size: 14px;");
+
+                Label statusLabel = new Label("Status: " + status);
+                statusLabel.setStyle("-fx-font-weight: bold;");
+
+                // Style status label based on status
+                switch (status.toLowerCase()) {
+                    case "accepted":
+                        statusLabel.setStyle(statusLabel.getStyle() + "; -fx-text-fill: #28a745;"); // Green
+                        break;
+                    case "rejected":
+                        statusLabel.setStyle(statusLabel.getStyle() + "; -fx-text-fill: #dc3545;"); // Red
+                        break;
+                    default: // Pending
+                        statusLabel.setStyle(statusLabel.getStyle() + "; -fx-text-fill: #ffc107;"); // Yellow
+                        break;
+                }
 
                 Button acceptBtn = new Button("Accept");
                 Button rejectBtn = new Button("Reject");
 
-                // Create the HBox first
-                HBox hbox = new HBox(10, info, acceptBtn, rejectBtn);
-                hbox.setStyle("-fx-padding: 5; -fx-alignment: center-left;");
+                // Style the buttons
+                acceptBtn.setStyle("-fx-background-color: #28a745; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;");
+                rejectBtn.setStyle("-fx-background-color: #dc3545; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;");
 
-                // Only enable buttons for pending applications
+                // Disable buttons if application is not pending
                 if (!status.equalsIgnoreCase("Pending")) {
                     acceptBtn.setDisable(true);
                     rejectBtn.setDisable(true);
                 }
 
-                acceptBtn.setOnAction(e -> updateApplicationStatus(applicationId, "Accepted"));
-                rejectBtn.setOnAction(e -> {
-                    updateApplicationStatus(applicationId, "Rejected");
-                    // Remove the application from the list when rejected
-                    applicationsList.getItems().remove(hbox);
+                HBox buttonBox = new HBox(10, acceptBtn, rejectBtn);
+                buttonBox.setStyle("-fx-alignment: center;");
+
+                VBox infoBox = new VBox(5, info, statusLabel);
+                HBox hbox = new HBox(20, infoBox, buttonBox);
+
+                // Style the container based on status
+                String baseStyle = "-fx-padding: 15; -fx-alignment: center-left; -fx-background-color: #f8f9fa; " +
+                        "-fx-background-radius: 5; -fx-border-radius: 5; -fx-border-width: 2;";
+
+                switch (status.toLowerCase()) {
+                    case "accepted":
+                        hbox.setStyle(baseStyle + "; -fx-border-color: #28a745;"); // Green border
+                        break;
+                    case "rejected":
+                        hbox.setStyle(baseStyle + "; -fx-border-color: #dc3545;"); // Red border
+                        break;
+                    default: // Pending
+                        hbox.setStyle(baseStyle + "; -fx-border-color: #ffc107;"); // Yellow border
+                        break;
+                }
+
+                // Store applicationId in final variable to use in lambda
+                final int currentAppId = applicationId;
+
+                acceptBtn.setOnAction(event -> {
+                    System.out.println("\n=== Accept Button Clicked ===");
+                    System.out.println("Attempting to accept application ID: " + currentAppId);
+
+                    try {
+                        String updateSql = "UPDATE applications SET status = 'Accepted' WHERE application_id = ?";
+                        System.out.println("Executing SQL: " + updateSql + " with ID: " + currentAppId);
+
+                        Connection updateConn = getDatabaseConnection();
+                        PreparedStatement updateStmt = updateConn.prepareStatement(updateSql);
+                        updateStmt.setInt(1, currentAppId);
+                        int result = updateStmt.executeUpdate();
+                        System.out.println("Update result (rows affected): " + result);
+
+                        if (result > 0) {
+                            System.out.println("Database update successful!");
+                            // Update UI
+                            acceptBtn.setDisable(true);
+                            rejectBtn.setDisable(true);
+                            hbox.setStyle(baseStyle + "; -fx-border-color: #28a745;");
+                            statusLabel.setText("Status: Accepted");
+                            statusLabel.setStyle(statusLabel.getStyle().replace("-fx-text-fill: #ffc107;", "-fx-text-fill: #28a745;"));
+                            gigStatusLabel.setText("Application accepted successfully!");
+                            System.out.println("UI updated successfully");
+                        } else {
+                            System.out.println("Warning: No rows were updated in the database!");
+                            gigStatusLabel.setText("Error: Could not update application status");
+                        }
+                        updateConn.close();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        System.err.println("Error details: " + ex.getMessage());
+                        gigStatusLabel.setText("Error accepting application: " + ex.getMessage());
+                    }
+                    System.out.println("=== Accept Operation Complete ===\n");
+                });
+
+                rejectBtn.setOnAction(event -> {
+                    System.out.println("\n=== Reject Button Clicked ===");
+                    System.out.println("Attempting to reject application ID: " + currentAppId);
+
+                    try {
+                        String rejectSql = "UPDATE applications SET status = 'Rejected' WHERE application_id = ?";
+                        System.out.println("Executing SQL: " + rejectSql + " with ID: " + currentAppId);
+
+                        Connection rejectConn = getDatabaseConnection();
+                        PreparedStatement rejectStmt = rejectConn.prepareStatement(rejectSql);
+                        rejectStmt.setInt(1, currentAppId);
+                        int result = rejectStmt.executeUpdate();
+                        System.out.println("Update result (rows affected): " + result);
+
+                        if (result > 0) {
+                            System.out.println("Database update successful!");
+                            // Update UI
+                            acceptBtn.setDisable(true);
+                            rejectBtn.setDisable(true);
+                            hbox.setStyle(baseStyle + "; -fx-border-color: #dc3545;");
+                            statusLabel.setText("Status: Rejected");
+                            statusLabel.setStyle(statusLabel.getStyle().replace("-fx-text-fill: #ffc107;", "-fx-text-fill: #dc3545;"));
+                            gigStatusLabel.setText("Application rejected successfully!");
+                            System.out.println("UI updated successfully");
+                        } else {
+                            System.out.println("Warning: No rows were updated in the database!");
+                            gigStatusLabel.setText("Error: Could not update application status");
+                        }
+                        rejectConn.close();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        System.err.println("Error details: " + ex.getMessage());
+                        gigStatusLabel.setText("Error rejecting application: " + ex.getMessage());
+                    }
+                    System.out.println("=== Reject Operation Complete ===\n");
                 });
 
                 apps.add(hbox);
             }
 
+            System.out.println("\nTotal applications found: " + applicationCount);
+
             if (apps.isEmpty()) {
-                HBox empty = new HBox(new Label("No applications yet."));
+                System.out.println("No applications to display");
+                HBox empty = new HBox(new Label("No applications yet for your gigs."));
+                empty.setStyle("-fx-padding: 10; -fx-alignment: center;");
                 applicationsList.getItems().add(empty);
             } else {
+                System.out.println("Setting " + apps.size() + " applications to the list");
                 applicationsList.setItems(apps);
             }
+
+            System.out.println("=== Applications Loading Complete ===\n");
         } catch (SQLException e) {
             e.printStackTrace();
+            System.err.println("Error loading applications: " + e.getMessage());
             gigStatusLabel.setText("Error loading applications: " + e.getMessage());
-        }
-    }
-
-    private void updateApplicationStatus(int applicationId, String newStatus) {
-        try (Connection conn = getDatabaseConnection()) {
-            // First verify if this application is for a gig owned by this café
-            String verifySQL = "SELECT g.cafe_id FROM applications a " +
-                    "JOIN gigs g ON a.gig_id = g.gig_id " +
-                    "WHERE a.application_id = ?";
-            PreparedStatement verifyStmt = conn.prepareStatement(verifySQL);
-            verifyStmt.setInt(1, applicationId);
-            ResultSet verifyRs = verifyStmt.executeQuery();
-
-            if (!verifyRs.next() || verifyRs.getInt("cafe_id") != cafeId) {
-                gigStatusLabel.setText("You don't have permission to update this application.");
-                return;
-            }
-
-            String sql = "UPDATE applications SET status = ? WHERE application_id = ?";
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setString(1, newStatus);
-            stmt.setInt(2, applicationId);
-
-            int rows = stmt.executeUpdate();
-            if (rows > 0) {
-                gigStatusLabel.setText("Application " + newStatus.toLowerCase() + ".");
-                loadApplications(); // Refresh the list
-            } else {
-                gigStatusLabel.setText("Failed to update status.");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            gigStatusLabel.setText("Error updating status: " + e.getMessage());
         }
     }
 
@@ -268,20 +419,20 @@ public class CafeDashboardController {
     @FXML
     private void handleLogout() {
         try {
-            // Load the login page
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/application/views/CafeLogin.fxml"));
-            Parent loginPage = loader.load();
-
-            // Get the current stage
-            Stage stage = (Stage) nameLabel.getScene().getWindow();
-
-            // Set the login page scene
-            Scene scene = new Scene(loginPage);
-            stage.setScene(scene);
-            stage.show();
+            switchToLoginScene();
         } catch (IOException e) {
             e.printStackTrace();
-            gigStatusLabel.setText("Error logging out");
+        }
+    }
+
+    @FXML
+    private void reloadApplications() {
+        try {
+            loadApplications();
+            gigStatusLabel.setText("Applications reloaded successfully!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            gigStatusLabel.setText("Error reloading applications: " + e.getMessage());
         }
     }
 
@@ -327,3 +478,4 @@ public class CafeDashboardController {
         // ... existing code ...
     }
 }
+

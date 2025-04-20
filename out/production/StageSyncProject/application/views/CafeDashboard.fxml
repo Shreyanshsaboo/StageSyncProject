@@ -133,6 +133,15 @@
                     <VBox spacing="15" style="-fx-background-color: #ffffff; -fx-padding: 30; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 3);">
                         <Text text="Applications" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-fill: #212529;"/>
 
+                        <HBox spacing="10" alignment="CENTER_RIGHT">
+                            <Button text="Reload Applications" onAction="#reloadApplications"
+                                    style="-fx-background-color: #198754; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 8 16; -fx-background-radius: 4; -fx-cursor: hand;">
+                                <effect>
+                                    <javafx.scene.effect.DropShadow radius="4" spread="0.1" color="rgba(0,0,0,0.2)"/>
+                                </effect>
+                            </Button>
+                        </HBox>
+
                         <ListView fx:id="applicationsList" prefHeight="500.0"
                                   style="-fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #dee2e6; -fx-border-width: 1;">
                             <items>
