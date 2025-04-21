@@ -32,6 +32,12 @@ public class CafeSignupController {
             return;
         }
 
+        // Name validation - cannot contain numbers
+        if (name.matches(".*\\d.*")) {
+            statusLabel.setText("Business name cannot contain numbers.");
+            return;
+        }
+
         // Email validation - must end with example.com or gmail.com
         if (!email.endsWith("example.com") && !email.endsWith("gmail.com")) {
             statusLabel.setText("Email must end with example.com or gmail.com");

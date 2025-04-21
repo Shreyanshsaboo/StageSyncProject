@@ -44,6 +44,12 @@ public class MusicianSignupController {
             return;
         }
 
+        // Name validation - cannot contain numbers
+        if (name.matches(".*\\d.*")) {
+            statusLabel.setText("Name cannot contain numbers.");
+            return;
+        }
+
         // Email validation - must end with example.com or gmail.com
         if (!email.endsWith("example.com") && !email.endsWith("gmail.com")) {
             statusLabel.setText("Email must end with example.com or gmail.com");
