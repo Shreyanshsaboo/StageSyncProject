@@ -29,6 +29,18 @@ public class CafeLoginController {
             return;
         }
 
+        // Email validation - must end with example.com or gmail.com
+        if (!email.endsWith("example.com") && !email.endsWith("gmail.com")) {
+            statusLabel.setText("Email must end with example.com or gmail.com");
+            return;
+        }
+
+        // Password validation - must have minimum 5 letters
+        if (password.length() < 5) {
+            statusLabel.setText("Password must have at least 5 characters");
+            return;
+        }
+
         try (Connection conn = DBUtil.getConnection()) {
             String sql = "SELECT * FROM cafes WHERE email = ? AND password = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
@@ -59,6 +71,26 @@ public class CafeLoginController {
         } catch (Exception e) {
             e.printStackTrace();
             statusLabel.setText("Error: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    public void handleSignUpLink() {
+        try {
+            // Load the cafe signup page
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/application/views/CafeSignup.fxml"));
+            Parent signupPage = loader.load();
+
+            // Get the current stage
+            Stage stage = (Stage) emailField.getScene().getWindow();
+
+            // Set the signup page scene
+            Scene scene = new Scene(signupPage);
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            statusLabel.setText("Error navigating to signup page");
         }
     }
 

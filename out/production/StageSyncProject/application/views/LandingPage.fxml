@@ -2,17 +2,72 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Font?>
 
-<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="application.controllers.LandingPageController"
-      alignment="CENTER" spacing="15" style="-fx-padding: 30;">
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="application.controllers.LandingPageController"
+            style="-fx-background-color: linear-gradient(to bottom, #1a1a2e, #16213e);">
 
-    <Label text="Welcome to StageSync" style="-fx-font-size: 24;" />
+    <padding>
+        <Insets top="30" right="30" bottom="30" left="30"/>
+    </padding>
 
-    <Button text="Sign up as Musician" onAction="#goToMusicianSignup"/>
-    <Button text="Sign up as Café Owner" onAction="#goToCafeSignup"/>
+    <top>
+        <Label text="StageSync" alignment="CENTER" BorderPane.alignment="CENTER"
+               style="-fx-font-size: 42; -fx-font-weight: bold; -fx-text-fill: #e94560;">
+            <font>
+                <Font name="System Bold" size="42.0"/>
+            </font>
+            <BorderPane.margin>
+                <Insets top="30" bottom="10"/>
+            </BorderPane.margin>
+        </Label>
+    </top>
 
-    <Label text="Already have an account?" />
+    <center>
+        <VBox alignment="CENTER" spacing="30">
+            <Label text="Connect Musicians and Venues"
+                   style="-fx-font-size: 18; -fx-text-fill: #ffffff; -fx-font-style: italic;"/>
 
-    <Button text="Login as Musician" onAction="#goToMusicianLogin"/>
-    <Button text="Login as Café Owner" onAction="#goToCafeLogin"/>
-</VBox>
+            <VBox alignment="CENTER" spacing="15" style="-fx-padding: 30 0;">
+                <Label text="New to StageSync?" style="-fx-font-size: 20; -fx-text-fill: #ffffff; -fx-font-weight: bold;"/>
+
+                <HBox spacing="20" alignment="CENTER">
+                    <Button text="Sign up as Musician" onAction="#goToMusicianSignup"
+                            style="-fx-background-color: #e94560; -fx-text-fill: white; -fx-font-size: 14;
+                                   -fx-padding: 10 20; -fx-background-radius: 5; -fx-cursor: hand;"/>
+
+                    <Button text="Sign up as Café Owner" onAction="#goToCafeSignup"
+                            style="-fx-background-color: #0f3460; -fx-text-fill: white; -fx-font-size: 14;
+                                   -fx-padding: 10 20; -fx-background-radius: 5; -fx-cursor: hand;"/>
+                </HBox>
+            </VBox>
+
+            <VBox alignment="CENTER" spacing="15">
+                <Label text="Already have an account?" style="-fx-font-size: 20; -fx-text-fill: #ffffff; -fx-font-weight: bold;"/>
+
+                <HBox spacing="20" alignment="CENTER">
+                    <Button text="Login as Musician" onAction="#goToMusicianLogin"
+                            style="-fx-background-color: transparent; -fx-text-fill: #e94560; -fx-font-size: 14;
+                                   -fx-padding: 10 20; -fx-border-color: #e94560; -fx-border-radius: 5;
+                                   -fx-cursor: hand;"/>
+
+                    <Button text="Login as Café Owner" onAction="#goToCafeLogin"
+                            style="-fx-background-color: transparent; -fx-text-fill: #0f3460; -fx-font-size: 14;
+                                   -fx-padding: 10 20; -fx-border-color: #0f3460; -fx-border-radius: 5;
+                                   -fx-cursor: hand;"/>
+                </HBox>
+            </VBox>
+        </VBox>
+    </center>
+
+    <bottom>
+        <Label text="© 2023 StageSync - All Rights Reserved"
+               style="-fx-text-fill: #cccccc; -fx-font-size: 12;"
+               BorderPane.alignment="CENTER">
+            <BorderPane.margin>
+                <Insets top="20"/>
+            </BorderPane.margin>
+        </Label>
+    </bottom>
+</BorderPane>

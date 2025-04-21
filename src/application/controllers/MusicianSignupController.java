@@ -2,10 +2,16 @@ package application.controllers;
 
 import application.DBUtil;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.util.regex.Pattern;
 
 public class MusicianSignupController {
 
@@ -38,6 +44,18 @@ public class MusicianSignupController {
             return;
         }
 
+        // Email validation - must end with example.com or gmail.com
+        if (!email.endsWith("example.com") && !email.endsWith("gmail.com")) {
+            statusLabel.setText("Email must end with example.com or gmail.com");
+            return;
+        }
+
+        // Password validation - must have minimum 5 letters
+        if (password.length() < 5) {
+            statusLabel.setText("Password must have at least 5 characters");
+            return;
+        }
+
         // Split the full name into first and last name
         String[] nameParts = name.split(" ", 2);
         String firstName = nameParts[0];
@@ -65,6 +83,46 @@ public class MusicianSignupController {
         } catch (Exception e) {
             e.printStackTrace();
             statusLabel.setText("Error: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    public void handleLoginLink() {
+        try {
+            // Load the musician login page
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/application/views/MusicianLogin.fxml"));
+            Parent loginPage = loader.load();
+
+            // Get the current stage
+            Stage stage = (Stage) emailField.getScene().getWindow();
+
+            // Set the login page scene
+            Scene scene = new Scene(loginPage);
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            statusLabel.setText("Error navigating to login page");
+        }
+    }
+
+    @FXML
+    public void handleBack() {
+        try {
+            // Load the landing page
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/application/views/LandingPage.fxml"));
+            Parent landingPage = loader.load();
+
+            // Get the current stage
+            Stage stage = (Stage) emailField.getScene().getWindow();
+
+            // Set the landing page scene
+            Scene scene = new Scene(landingPage);
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            statusLabel.setText("Error returning to landing page");
         }
     }
 }
