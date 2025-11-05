@@ -1,7 +1,7 @@
 StageSync is an advanced JavaFX application engineered to revolutionize gig coordination for
-independent musicians, bands, and venue managers. Built with a modern, gradient-based user interface
+independent musicians, bands, and venue managers. Built with a modern, gradient based user interface
 and integrated with a MySQL backend, the platform centralizes live event planning through role-specific
-dashboards and real-time data synchronization. Musicians can create detailed profiles, upload audio
+dashboards and real time data synchronization. Musicians can create detailed profiles, upload audio
 portfolios, and browse gig listings filtered by genre, location, and payment range, while venues publish
 opportunities with customizable requirements such as equipment needs and audience capacity. The
 system’s architecture employs MVC design patterns, ensuring separation between the dynamic UI layer—
